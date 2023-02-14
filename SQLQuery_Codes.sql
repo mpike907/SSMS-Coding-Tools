@@ -1,7 +1,7 @@
 
 /* WELCOME TO SSMS! 
 This code was written to assist newcomers to SSMS who need to perform queries
-within databases 
+within databases and tables within databases
 
 /* Connect to a SQL Server
 You should get a prompt when opening to connect to a SQL Server. If not, 
@@ -15,27 +15,8 @@ this will help you connect and view databases on that server */;
 	If this is not available, you may have to go into ODBC DATA SOURCES on your computer, set up 
 	server connections, utilizing admin approval (if needed to access certain connections). */
 
-
-/* CODES BELOW FOR RETRIEVING DATA: */
-
-
-/* IMMUNIZATION DATA */
-/* Pull immunization data from cases_iz & match to CEDRS */
-
-SELECT iz.profileid, iz.eventid, iz.vaccination_date, iz.vaccination_code_id, 
-		cdr.profileid, cdr.eventid,cdr.collectiondate, cdr.countyassigned, cdr.breakthrough,
-			 cdr.partialonly, cdr.reinfection, cdr.hospitalized, cdr.deathdueto_vs_u071
-
-	FROM [covid19].[ciis].[case_iz] iz
-	
-	LEFT JOIN [covid19].[dbo].[cedrs_view] cdr on iz.eventid = cdr.eventid
-	
-	WHERE BREAKTHROUGH = 1 
-	ORDER BY iz.eventid, iz.vaccination_date
-; 
-
-
-/* Find a COUNT for a variable */
+/**************************************************************/	
+/* Find a COUNTS for a variable (Similiar to a PROC FREQ in SAS) */
 /* How many eventids (cases) are there were breakthrough = 1? */;
 
 SELECT COUNT (eventid) 
@@ -53,9 +34,64 @@ SELECT COUNT (eventid)
 	FROM [covid19].[dbo].[cedrs_view] 
 	WHERE Breakthrough = 1 and hospitalized = 1 and collectiondate between '2022-09-01' and '2022-09-30' 
 
+/* How many cases in people age 50+ occurred on or after Sept 1, 2022?*/
+SELECT COUNT (eventid) 
+	FROM [covid19].[dbo].[cedrs_view] 
+	WHERE age_at_reported >= 50 and collectiondate between '2022-09-01' and '2022-09-30' 
 
 
+/**************************************************************/
+/* SELECT DATA (Similar to a PROC SQL or DATA step in SAS) */
+/* Select all rows where CollectionDates on or after 9/1/2022. */
+SELECT * 
+	FROM [covid19].[dbo].[cedrs_view] 
+	WHERE collectiondate >= '2022-09-01'
 
+/* Select all rows on several variables and CollectionDates between 9/1/2022 and 9/30/2022. */
+SELECT * 
+	FROM [covid19].[dbo].[cedrs_view] 
+	WHERE reinfection = 1 and breakthrough = 1 and collectiondate between '2022-09-01' and '2022-09-30'
+
+/* Select rows (cases) in a specific county with collection dates on or after 9/1/2022. */
+SELECT * 
+	FROM [covid19].[dbo].[cedrs_view] 
+	WHERE countyassigned = 'MESA' and breakthrough = 1 and collectiondate between '2022-09-01' and '2022-09-30'
+
+/* How many people who are 40-49 were bivalent vaccinated on a specific date?*/
+/* Need to get a cumulative sum */
+/* First, pull all those cases you need between 40-49 */
+SELECT	age, 
+		total_bivalent
+	FROM [covid19].[ciis].[vaxunvax_age_bivalent] 
+	WHERE age between 40 and 49 and date = '2022-12-15'
+
+/*Second, do a cumulative sum and check your work to the first data pull */
+SELECT	age, 
+		SUM(total_bivalent) over (order by age) Cumulative_total
+	FROM [covid19].[ciis].[vaxunvax_age_bivalent] 
+	WHERE age between 40 and 49 and date = '2022-12-15'
+/* cumulative_total for 40-49 will output on age = 49 */
+
+
+/**************************************************************/
+/* LEFT JOIN EXAMPLES: */
+/* IMMUNIZATION DATA */
+/* Pull immunization data from cases_iz & match to CEDRS */
+/* Grabs vaccination data from CIIS and matches to cases in CEDRS */
+
+SELECT iz.profileid, iz.eventid, iz.vaccination_date, iz.vaccination_code_id, 
+		cdr.profileid, cdr.eventid,cdr.collectiondate, cdr.countyassigned, cdr.breakthrough,
+			 cdr.partialonly, cdr.reinfection, cdr.hospitalized, cdr.deathdueto_vs_u071
+
+	FROM [covid19].[ciis].[case_iz] iz
+	
+	LEFT JOIN [covid19].[dbo].[cedrs_view] cdr on iz.eventid = cdr.eventid
+	
+	WHERE BREAKTHROUGH = 1 
+	ORDER BY iz.eventid, iz.vaccination_date
+; 
+
+/**************************************************************/
 /* ELR DATA PULLS */;
 /* This code creates a trailing 3-week variable based upon when lab last submitted */
 
