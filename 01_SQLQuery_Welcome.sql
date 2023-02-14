@@ -1,5 +1,6 @@
 
 /* WELCOME TO SSMS! 
+Written by M.Pike 2/14/2023
 This code was written to assist newcomers to SSMS who need to perform queries
 within databases and tables within databases
 
