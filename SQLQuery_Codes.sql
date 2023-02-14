@@ -58,7 +58,7 @@ SELECT *
 	WHERE countyassigned = 'MESA' and breakthrough = 1 and collectiondate between '2022-09-01' and '2022-09-30'
 
 /* How many people who are 40-49 received a bivalent vaccination on a specific date?*/
-/* Need to get a cumulative sum */
+/* For this, you'll need to get a cumulative sum of those 40-49 who have a bivalent dose on a specific date */
 /* First, pull all those cases you need between 40-49 */
 SELECT	age, 
 	total_bivalent
