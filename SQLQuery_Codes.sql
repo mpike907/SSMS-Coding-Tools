@@ -57,21 +57,21 @@ SELECT *
 	FROM [covid19].[dbo].[cedrs_view] 
 	WHERE countyassigned = 'MESA' and breakthrough = 1 and collectiondate between '2022-09-01' and '2022-09-30'
 
-/* How many people who are 40-49 were bivalent vaccinated on a specific date?*/
+/* How many people who are 40-49 received a bivalent vaccination on a specific date?*/
 /* Need to get a cumulative sum */
 /* First, pull all those cases you need between 40-49 */
 SELECT	age, 
-		total_bivalent
+	total_bivalent
 	FROM [covid19].[ciis].[vaxunvax_age_bivalent] 
 	WHERE age between 40 and 49 and date = '2022-12-15'
 
 /*Second, do a cumulative sum and check your work to the first data pull */
 SELECT	age, 
-		SUM(total_bivalent) over (order by age) Cumulative_total
+	SUM(total_bivalent) over (order by age) Cumulative_total
 	FROM [covid19].[ciis].[vaxunvax_age_bivalent] 
 	WHERE age between 40 and 49 and date = '2022-12-15'
 /* cumulative_total for 40-49 will output on age = 49 */
-
+/* check that sum of first and second outputs are equal */
 
 /**************************************************************/
 /* LEFT JOIN EXAMPLES: */
