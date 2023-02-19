@@ -2,7 +2,11 @@
 /* WELCOME TO SSMS! 
 Written by M.Pike 2/14/2023
 This code was written to assist newcomers to SSMS who need to perform queries
-within databases and tables within databases
+within databases and tables within databases. SSMS allows you to access, 
+configure, manage, administer, and develop all components of SQL Server. 
+If you're using SSMS, you will need admin rights in order to create tables.
+However, you still can use SSMS to query questions you have about the data
+on the server. This will help you get started with SSMS.
 
 /* Connect to a SQL Server
 You should get a prompt when opening to connect to a SQL Server. If not, 
